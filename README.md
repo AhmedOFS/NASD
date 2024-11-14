@@ -1,6 +1,6 @@
 
 
-# TTHNDR NASDAQ Task
+# THNDR NASDAQ Task
 
 
 
