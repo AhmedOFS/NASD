@@ -29,12 +29,12 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 
-import Clients from '../apiManagement';
+
 import store, { useAppDispatch, useAppSelector } from '../store/store';
 import { SetQuery } from '../store/searchSlice';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+
 import { fetchNext, fetchSearch, fetchStocks, returnStocks, SetDisplay } from '../store/stocksSlice';
+import StockItem from './stockItem';
 
 
 
@@ -47,93 +47,7 @@ import { fetchNext, fetchSearch, fetchStocks, returnStocks, SetDisplay } from '.
 
 
 
-  interface stockprops {
 
-
-    item: Stock,
-    availablity: Boolean
-  }
-
-
-  const StockItem : React.FC< stockprops>  =(stock)=> {
-
-    const [useable, setUseable] = useState<Boolean>(stock.availablity);
-
-    
-
-    const [loading, setLoading] = useState<boolean>(true);
-
-
-    const [urls, setUrl] = useState<string>("place");
-    const [image, setImage] = useState<any>();
-    const [error, setError] = useState<string | null>(null);
-    useEffect(() => {
-
-      const fetchImage = async () => {
-        try{
-          setError(null); // Clear previous error, if any
-        
-            const response =  await Clients.imageClient.get(`/tickers/${stock.item.symbol}` );
-            if (response.status === 429) { // 429 is the HTTP status code for rate limiting
-              throw new Error("Rate limit exceeded");
-            }
-      
-      
-            const data = await response.data;
-            
-    
-            if(data){
-              console.log("data accepted and is", data)
-        if(data.results.branding){
-    
-              setUrl(`${data.results.branding.icon_url}?apiKey=OvTM4lSkLMBfIezG360eiEwaGuUZlJR2`);
-              console.log("setting URL")
-              setUseable(true)
-        }else{
-          console.log("no url available")
-        }
-            }else{
-              console.log("failure to load data")
-            }
-               
-          
-        } catch (err: any) {
-          console.log(err)
-          // Retry after 1 minute if an error occurs
-
-          }}
-
-   
-         // fetchImage();
-   
-   
-  
-     
-    }, []);
-
-
-
-
- return  ( <View style={styles.stockCard}>
-    <View style={[styles.iconContainer] as StyleProp<ViewStyle>}>
-    { urls=="place" ?<Text>{  stock.item.symbol.substring(0,2)} </Text>:   <Image
-    source={{ uri: urls}}
-    style={styles.image}
-    onError={()=>{
-      console.log(`Retrying image load`);
-       
-
-  
-    }}
-  //  onLoadEnd={() => {}}
-
-  />}
-    </View>
-    <Text style={styles.symbol}>{stock.item.symbol}</Text>
-    <Text style={styles.name}>{stock.item.name}</Text>
-  </View>)
-;
-  }
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -224,7 +138,7 @@ dispatch(returnStocks())
   
         return(  
          
-  <StockItem item={item } availablity={true} />
+  <StockItem item={item }/>
   
        );
         }}
@@ -247,7 +161,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchBar: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#23263A',
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,
@@ -258,13 +172,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#1F2130',
     paddingTop: 50,
     paddingHorizontal: 20,
   },
   stockCard: {
     aspectRatio: 1,  
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#23263A',
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',

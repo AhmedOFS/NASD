@@ -26,7 +26,7 @@ apiClient.interceptors.response.use(
     console.log("failed and retrying")
     store.dispatch(searchFail());
     const config = error.config;
-    if (!config || config.__retryCount >= 9 || (error as AxiosError)?.response?.status != 429) {
+    if (!config || config.__retryCount >= 9 ) {
       store.dispatch(searchSuccess());
       return Promise.reject(error);
     }
