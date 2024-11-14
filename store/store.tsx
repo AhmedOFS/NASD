@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import searchReducer from './searchSlice';
+import searchReducer from '../store/searchSlice';
+import stocksReducer from '../store/stocksSlice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const store=configureStore({
 
     reducer:{
-        Searchapi : searchReducer
+        Searchapi : searchReducer,
+        Stocksapi: stocksReducer
     }
 })
 export type RootState = ReturnType<typeof store.getState>
