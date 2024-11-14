@@ -8,9 +8,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import axios from 'axios';
+
 import SplashScreen from 'react-native-splash-screen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   SafeAreaView,
@@ -35,6 +37,10 @@ import {
 import ImageM from './imageM';
 
 import Clients from './apiManagement';
+import store, { useAppDispatch, useAppSelector } from './store/store';
+import { SetQuery } from './store/searchSlice';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
 
 
@@ -163,8 +169,11 @@ const header={"Authorization" : `Bearer ${apiKey}`};
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [stocks, setStocks] = useState<Stock[]>([]);
-const [next, setNext]= useState<String>("");
 
+  const dispatch = useAppDispatch()
+const [next, setNext]= useState<String>("");
+const stateQuery = useAppSelector(state => state.Searchapi.currentQuery);
+const searchfail = useAppSelector(state => state.Searchapi.failure);
 const [query, setQuery]= useState<String>("");
 const [isTyping, setIsTyping] = useState(false);
 const typingTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -172,8 +181,12 @@ const typingTimeout = useRef<NodeJS.Timeout | null>(null);
 
 const searchFunc=async(input: string)=>{
   console.log("calling search")
+  dispatch(SetQuery({query:input}))
+  console.log("query updated")
  const response=await Clients.apiClient.get(`/tickers/${input}`,  { headers:  header  } );
 setQuery(input)
+
+
  const data = await response.data
  //setNext(data.next_url)
  //const stocksData: Stock[] 
@@ -314,9 +327,11 @@ console.log("loading more Data")
 
 
   return (
+   
     <View style={styles.container}>
     <Text style={styles.header}>Nasdaq</Text>
     <TextInput   onChangeText={handleTextChange} style={styles.searchBar} placeholder="Search for stocks" placeholderTextColor="#888" />
+    {  searchfail?  <ActivityIndicator  size="large" color='#1e1e1e'  /> : <></>}
     <FlatList
       data={stocks}
       onEndReached={query!==""? ()=>{}: onNext}
@@ -333,6 +348,7 @@ console.log("loading more Data")
       contentContainerStyle={styles.grid}
     />
   </View>
+
   );
 }
 
@@ -394,4 +410,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+const AppWrapper = () => {
+
+
+  return (
+    <Provider store={store}>
+      <App /> 
+    </Provider>
+  )
+}
+
+export default AppWrapper;
